@@ -78,7 +78,7 @@ public class GIFMaker : MonoBehaviour
     }
 
 
-    [Button]
+    [Foldout("Prefab Assignment"), Button]
     //generates all PNG's from prefabs within a path
     public void GeneratePicturesFromFileDirectory()
     {
@@ -99,7 +99,7 @@ public class GIFMaker : MonoBehaviour
     }
 
 
-    [Button]
+    [Foldout("Prefab Assignment"), Button]
     public void GeneratePictureFromPrefab()
     {
         AssetDatabase.Refresh();
@@ -112,7 +112,7 @@ public class GIFMaker : MonoBehaviour
     }
 
 
-    [Button]
+    [Foldout("GIF Attributes"), Button]
     public void GenerateGifFromPrefab()
     {
         AssetDatabase.Refresh();
@@ -126,7 +126,7 @@ public class GIFMaker : MonoBehaviour
     }
 
 
-    [Button]
+    [Foldout("GIF Attributes"), Button]
     public void GenerateGifsFromFileDirectory()
     {
         AssetDatabase.Refresh();

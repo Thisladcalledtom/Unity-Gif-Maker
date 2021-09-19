@@ -2,7 +2,7 @@
 
 namespace NaughtyAttributes
 {
-	[AttributeUsage(AttributeTargets.Field, AllowMultiple = false, Inherited = true)]
+	[AttributeUsage(AttributeTargets.Field | AttributeTargets.Method, AllowMultiple = false, Inherited = true)]
 	public class FoldoutAttribute : MetaAttribute, IGroupAttribute
 	{
 		public string Name { get; private set; }
