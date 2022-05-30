@@ -6,6 +6,7 @@ using UnityEditor;
 using UnityEngine;
 using NaughtyAttributes;
 using UnityEngine.Rendering.Universal;
+using Debug = UnityEngine.Debug;
 
 public class GIFMaker : MonoBehaviour
 {
@@ -102,8 +103,6 @@ public class GIFMaker : MonoBehaviour
     [Foldout("Prefab Assignment"), Button]
     public void GeneratePictureFromPrefab()
     {
-        AssetDatabase.Refresh();
-
         DirectoryInfo info = BuildDirectory(Application.dataPath, DefaultSavePath, SingularGenSavePath);
         FileInfo fileInfo = new FileInfo(Path.Combine(info.FullName, prefabToSnap.name + ".png"));
         TakeSnapShot(fileInfo, prefabToSnap, false);
@@ -115,22 +114,16 @@ public class GIFMaker : MonoBehaviour
     [Foldout("GIF Attributes"), Button]
     public void GenerateGifFromPrefab()
     {
-        AssetDatabase.Refresh();
-
         RotateObject(prefabToSnap);
 
         DirectoryInfo info = BuildDirectory(Application.dataPath, GIF_FramePath, prefabToSnap.name + "_Frames");
         CreateGIF(info, prefabToSnap);
-
-        AssetDatabase.Refresh();
     }
 
 
     [Foldout("GIF Attributes"), Button]
     public void GenerateGifsFromFileDirectory()
     {
-        AssetDatabase.Refresh();
-
         GrabPrefabsFromResources();
 
         foreach (GameObject obj in prefabs)
@@ -140,8 +133,6 @@ public class GIFMaker : MonoBehaviour
             DirectoryInfo info = BuildDirectory(Application.dataPath, DefaultSavePath ,GIF_FramePath, obj.name + "_Frames");
             CreateGIF(info, obj);
         }
-
-        AssetDatabase.Refresh();
         prefabs.Clear();
     }
 
@@ -159,7 +150,7 @@ public class GIFMaker : MonoBehaviour
     private void DeleteDirectory(DirectoryInfo info)
     {
         info.Delete(true);
-        UnityEngine.Debug.Log("DeleteDir Ran!!");
+        Debug.Log("DeleteDir Ran!!");
         AssetDatabase.Refresh();
     }
 
@@ -188,6 +179,7 @@ public class GIFMaker : MonoBehaviour
     private void TakeSnapShot(FileInfo info, GameObject prefab, bool autoRotate = false)
     {
         if (cam == null) cam = GetComponent<Camera>();
+
         if (allowSkyBox && skyBoxMaterial == null) { throw new Exception("No skybox material assigned yet you are trying to use one."); }
         if (allowSkyBox && skyBoxMaterial != null) { RenderSettings.skybox = skyBoxMaterial; }
 
@@ -197,7 +189,7 @@ public class GIFMaker : MonoBehaviour
         cam.nearClipPlane = 0.01f;
         cam.farClipPlane = 100.0f;
 
-        GameObject prefabClone = Instantiate(prefab, prefabPosition, autoRotate ? Quaternion.Euler(prefabRotation) : prefab.transform.rotation);
+        GameObject prefabClone = Instantiate(prefab, prefabPosition, autoRotate ? prefab.transform.rotation : Quaternion.Euler(prefabRotation));
 
         foreach (var renderer in prefabClone.GetComponentsInChildren<MeshRenderer>()) { renderer.receiveShadows = true; }
 
