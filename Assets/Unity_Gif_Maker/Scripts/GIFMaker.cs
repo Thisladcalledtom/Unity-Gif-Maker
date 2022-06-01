@@ -16,39 +16,40 @@ public class GIFMaker : MonoBehaviour
     [BoxGroup("Camera Z Position")] public float cameraZPosition = -5f;
 
     [Tooltip("The size of the render texture used. Larger sizes will yield more crisp results, but will take longer.")]
-    [BoxGroup("Render Texture")] [SerializeField] private RenderTextureSize renderTextureWidth;
-    [BoxGroup("Render Texture")] [SerializeField] private RenderTextureSize renderTextureHeight;
+    [BoxGroup("Render Texture")][SerializeField] private RenderTextureSize renderTextureWidth;
+    [BoxGroup("Render Texture")][SerializeField] private RenderTextureSize renderTextureHeight;
 
     [Space]
 
     [Tooltip("If this is enabled and a material is selected. use the skybox for a backdrop. disabled = black background.")]
-    [BoxGroup("Scene Initialization")] [SerializeField] private bool allowSkyBox = true;
-    [BoxGroup("Scene Initialization")] [SerializeField] private Material skyBoxMaterial;
+    [BoxGroup("Scene Initialization")][SerializeField] private bool allowSkyBox = true;
+    [BoxGroup("Scene Initialization")][SerializeField] private Material skyBoxMaterial;
     [Tooltip("Gives the pictures and gifs a solid background colour if not using a skybox.")]
-    [BoxGroup("Scene Initialization")] [SerializeField] private Color noSkyboxBackgroundColour;
+    [BoxGroup("Scene Initialization")][SerializeField] private Color noSkyboxBackgroundColour;
     [Tooltip("If this is true, the global post processing volume will be used")]
-    [BoxGroup("Scene Initialization")] [SerializeField] private bool allowPostProcessing = false;
+    [BoxGroup("Scene Initialization")][SerializeField] private bool allowPostProcessing = false;
     [Tooltip("Set the camera to perspective, or orthographic.")]
-    [BoxGroup("Scene Initialization")] [SerializeField] private bool isPerspectiveCamera = false;
+    [BoxGroup("Scene Initialization")][SerializeField] private bool isPerspectiveCamera = false;
 
-    [Foldout("Prefab Assignment")] [SerializeField] private GameObject prefabToSnap;
-    [Foldout("Prefab Assignment")] [SerializeField] private Vector3 prefabPosition;
-    [Foldout("Prefab Assignment")] [SerializeField] private Vector3 prefabRotation;
+    [Foldout("Prefab Assignment")][SerializeField] private GameObject prefabToSnap;
+    [Foldout("Prefab Assignment")][SerializeField] private Vector3 prefabPosition;
+    [Foldout("Prefab Assignment")][SerializeField] private Vector3 prefabRotation;
 
     [Space]
 
     private const string DefaultLoadPath = "Prefabs";
-    private const string DefaultSavePath = "Unity_Gif_Maker/Picture_Generation";
-    private const string MultipleGenSavePath = "Multiple";
-    private const string SingularGenSavePath = "Singular";
-    private const string GIF_FramePath = "GIF_Frames";
+    private const string DefaultSavePath = "Unity_Gif_Maker/Generation";
+    private const string GIFSavePath = "GIFS";
+    private const string PictureSavePath = "Pictures";
+    private const string GIF_FramePath = "Temp";
 
-    [Foldout("GIF Attributes")] [Range(1, 50)] [SerializeField] private int numOfFrames = 10;
-    [Foldout("GIF Attributes")] [Range(1, 10)] [SerializeField] private int rotationSpeedMultiplier = 1;
-    [Foldout("GIF Attributes")] [SerializeField] private bool xRotation;
-    [Foldout("GIF Attributes")] [SerializeField] private bool yRotation;
-    [Foldout("GIF Attributes")] [SerializeField] private bool zRotation;
-    [Foldout("GIF Attributes")] [Range(1, 50)] [SerializeField] private int DelayPerFrame = 5;
+    [Foldout("GIF Attributes")][Range(1, 50)][SerializeField] private int numOfFrames = 10;
+    [Foldout("GIF Attributes")][Range(1, 10)][SerializeField] private int rotationSpeedMultiplier = 1;
+    [Foldout("GIF Attributes")][SerializeField] private bool xRotation;
+    [Foldout("GIF Attributes")][SerializeField] private bool yRotation;
+    [Foldout("GIF Attributes")][SerializeField] private bool zRotation;
+    [Foldout("GIF Attributes")][Range(1, 50)][SerializeField] private int DelayPerFrame = 5;
+    [Foldout("GIF Attributes")][SerializeField] private bool deleteTempFolderOnCompletion = true;
 
 
     public Process ExecuteCommand(string command)
@@ -64,7 +65,6 @@ public class GIFMaker : MonoBehaviour
 
         process = Process.Start(ProcessInfo);
         process.EnableRaisingEvents = true;
-
         return process;
     }
 
@@ -89,7 +89,7 @@ public class GIFMaker : MonoBehaviour
 
         for (int i = 0; i < prefabs.Count; i++)
         {
-            DirectoryInfo info = BuildDirectory(Application.dataPath, DefaultSavePath, MultipleGenSavePath);
+            DirectoryInfo info = BuildDirectory(Application.dataPath, DefaultSavePath, PictureSavePath);
             FileInfo fileInfo = new FileInfo(Path.Combine(info.FullName, prefabs[i].name + ".png"));
             TakeSnapShot(fileInfo, prefabs[i], false);
         }
@@ -103,7 +103,7 @@ public class GIFMaker : MonoBehaviour
     [Foldout("Prefab Assignment"), Button]
     public void GeneratePictureFromPrefab()
     {
-        DirectoryInfo info = BuildDirectory(Application.dataPath, DefaultSavePath, SingularGenSavePath);
+        DirectoryInfo info = BuildDirectory(Application.dataPath, DefaultSavePath, PictureSavePath);
         FileInfo fileInfo = new FileInfo(Path.Combine(info.FullName, prefabToSnap.name + ".png"));
         TakeSnapShot(fileInfo, prefabToSnap, false);
 
@@ -130,7 +130,7 @@ public class GIFMaker : MonoBehaviour
         {
             RotateObject(obj);
 
-            DirectoryInfo info = BuildDirectory(Application.dataPath, DefaultSavePath ,GIF_FramePath, obj.name + "_Frames");
+            DirectoryInfo info = BuildDirectory(Application.dataPath, GIF_FramePath, obj.name + "_Frames");
             CreateGIF(info, obj);
         }
         prefabs.Clear();
@@ -139,18 +139,26 @@ public class GIFMaker : MonoBehaviour
     private void CreateGIF(DirectoryInfo info, GameObject obj)
     {
         string strCmdText;
-        strCmdText = $"magick convert -resize 768x576 -delay {DelayPerFrame} -loop 0 \"{info.FullName}/*.png\" \"{Application.dataPath}/{obj.name}.gif\"";
+        string path = Path.Combine(Application.dataPath, DefaultSavePath, GIFSavePath, $"{obj.name}.gif");
+        strCmdText = $"magick convert -resize 768x576 -delay {DelayPerFrame} -loop 0 \"{info.FullName}/*.png\" \"{path}\"";
 
         Process process = ExecuteCommand(strCmdText);
 
+        if (deleteTempFolderOnCompletion)
+        {
+
+        }
         //deletes the frames directory after the gif has been generated
         process.Exited += new EventHandler((sender, e) => DeleteDirectory(info));
     }
 
     private void DeleteDirectory(DirectoryInfo info)
     {
-        info.Delete(true);
-        Debug.Log("DeleteDir Ran!!");
+        if (deleteTempFolderOnCompletion)
+        {
+            info.Delete(true);
+        }
+
         AssetDatabase.Refresh();
     }
 
