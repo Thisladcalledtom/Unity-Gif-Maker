@@ -335,7 +335,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 19af5f2c5b3aa3543980978924a49b69, type: 3}
---- !u!84 &1605597980
+--- !u!84 &2029462790
 RenderTexture:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -407,7 +407,7 @@ Camera:
   m_GameObject: {fileID: 2036899101}
   m_Enabled: 1
   serializedVersion: 2
-  m_ClearFlags: 1
+  m_ClearFlags: 2
   m_BackGroundColor: {r: 0, g: 0, b: 0, a: 0}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
@@ -431,7 +431,7 @@ Camera:
     serializedVersion: 2
     m_Bits: 4294967295
   m_RenderingPath: -1
-  m_TargetTexture: {fileID: 1605597980}
+  m_TargetTexture: {fileID: 2029462790}
   m_TargetDisplay: 0
   m_TargetEye: 3
   m_HDR: 1
@@ -449,7 +449,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2036899101}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -1.5}
+  m_LocalPosition: {x: 0, y: 0, z: -0.7}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -470,7 +470,7 @@ MonoBehaviour:
   cameraZPosition: -0.7
   renderTextureWidth: 2048
   renderTextureHeight: 1024
-  allowSkyBox: 1
+  allowSkyBox: 0
   skyBoxMaterial: {fileID: 2100000, guid: 9b69ee09920e3cc469a5221a0aed0e33, type: 2}
   noSkyboxBackgroundColour: {r: 1, g: 1, b: 1, a: 0}
   allowPostProcessing: 1
@@ -479,7 +479,7 @@ MonoBehaviour:
     type: 3}
   prefabPosition: {x: 0, y: 0, z: 0}
   prefabRotation: {x: 0, y: 90, z: 0}
-  numOfFrames: 23
+  numOfFrames: 50
   rotationSpeedMultiplier: 1
   xRotation: 0
   yRotation: 1
