@@ -71,7 +71,7 @@ public class GIFMaker : MonoBehaviour
 
     private RenderTexture CreateRenderTexture()
     {
-        RenderTexture tex = new RenderTexture((int)renderTextureWidth, (int)renderTextureHeight, 24, RenderTextureFormat.ARGB32) //for 24 bit depth with stencil.
+        RenderTexture tex = new RenderTexture((int)renderTextureWidth, (int)renderTextureHeight, 32, RenderTextureFormat.ARGB32) //for 24 bit depth with stencil.
         {
             antiAliasing = 2
         };
@@ -140,7 +140,7 @@ public class GIFMaker : MonoBehaviour
     {
         string strCmdText;
         string path = Path.Combine(Application.dataPath, DefaultSavePath, GIFSavePath, $"{obj.name}.gif");
-        strCmdText = $"magick convert -resize 768x576 -delay {DelayPerFrame} -loop 0 \"{info.FullName}/*.png\" \"{path}\"";
+        strCmdText = $"magick convert -set dispose background -background none -resize 768x576 -delay {DelayPerFrame} -loop 0 \"{info.FullName}/*.png\" \"{path}\"";
 
         Process process = ExecuteCommand(strCmdText);
 
@@ -191,7 +191,7 @@ public class GIFMaker : MonoBehaviour
         if (allowSkyBox && skyBoxMaterial == null) { throw new Exception("No skybox material assigned yet you are trying to use one."); }
         if (allowSkyBox && skyBoxMaterial != null) { RenderSettings.skybox = skyBoxMaterial; }
 
-        cam.backgroundColor = noSkyboxBackgroundColour;
+        cam.backgroundColor = Color.clear;
         cam.clearFlags = allowSkyBox ? CameraClearFlags.Skybox : CameraClearFlags.SolidColor;
         cam.orthographic = !isPerspectiveCamera;
         cam.nearClipPlane = 0.01f;
@@ -207,11 +207,11 @@ public class GIFMaker : MonoBehaviour
 
         cam.targetTexture = CreateRenderTexture();
         RenderTexture.active = cam.targetTexture;
-        GL.Clear(true, true, Color.black);
+        GL.Clear(true, true, Color.clear);
 
         cam.Render();
 
-        Texture2D image = new Texture2D(cam.targetTexture.width, cam.targetTexture.height, TextureFormat.ARGB32, true, true);
+        Texture2D image = new Texture2D(cam.targetTexture.width, cam.targetTexture.height, TextureFormat.ARGB32 , true, true);
         image.ReadPixels(new Rect(0, 0, cam.targetTexture.width, cam.targetTexture.height), 0, 0);
         image.Apply();
 
