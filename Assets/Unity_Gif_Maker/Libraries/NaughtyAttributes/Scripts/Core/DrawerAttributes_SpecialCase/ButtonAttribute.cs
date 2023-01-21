@@ -18,16 +18,23 @@ namespace NaughtyAttributes
 		Playmode
 	}
 
+	public enum ButtonPlacement
+	{
+		Top,
+		Bottom
+	}
+
 	[AttributeUsage(AttributeTargets.Method, AllowMultiple = false, Inherited = true)]
 	public class ButtonAttribute : SpecialCaseDrawerAttribute
 	{
 		public string Text { get; private set; }
 		public EButtonEnableMode SelectedEnableMode { get; private set; }		
-
-		public ButtonAttribute(string text = null, EButtonEnableMode enabledMode = EButtonEnableMode.Always)
+		public ButtonPlacement Placement { get; private set; }
+		public ButtonAttribute(string text = null, EButtonEnableMode enabledMode = EButtonEnableMode.Always, ButtonPlacement placement = ButtonPlacement.Bottom)
 		{
 			this.Text = text;
 			this.SelectedEnableMode = enabledMode;
+			this.Placement = placement;
 		}
 	}
 }

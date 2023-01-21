@@ -60,7 +60,8 @@ namespace NaughtyAttributes.Editor
             GetSerializedProperties(ref _serializedProperties);
 
             bool anyNaughtyAttribute = _serializedProperties.Any(p => PropertyUtility.GetAttribute<INaughtyAttribute>(p) != null);
-            if (!anyNaughtyAttribute)
+			DrawButtons(false, ButtonPlacement.Top);
+			if (!anyNaughtyAttribute)
             {
                 DrawDefaultInspector();
             }
@@ -71,7 +72,7 @@ namespace NaughtyAttributes.Editor
 
             DrawNonSerializedFields();
             DrawNativeProperties();
-            DrawButtons();
+            DrawButtons(false, ButtonPlacement.Bottom);
         }
 
         protected void GetSerializedProperties(ref List<SerializedProperty> outSerializedProperties)
@@ -201,7 +202,7 @@ namespace NaughtyAttributes.Editor
             }
         }
 
-        protected void DrawButtons(bool drawHeader = false)
+        protected void DrawButtons(bool drawHeader = false, ButtonPlacement placement = ButtonPlacement.Bottom)
         {
             if (_methods.Any())
             {
@@ -215,7 +216,7 @@ namespace NaughtyAttributes.Editor
 
                 foreach (var method in _methods)
                 {
-                    NaughtyEditorGUI.Button(serializedObject.targetObject, method);
+                    NaughtyEditorGUI.Button(serializedObject.targetObject, method, placement);
                 }
             }
         }

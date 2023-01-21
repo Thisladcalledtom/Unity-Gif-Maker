@@ -131,7 +131,7 @@ namespace NaughtyAttributes.Editor
 			}
 		}
 
-		public static void Button(UnityEngine.Object target, MethodInfo methodInfo)
+		public static void Button(UnityEngine.Object target, MethodInfo methodInfo, ButtonPlacement placement = ButtonPlacement.Bottom)
 		{
 			bool visible = ButtonUtility.IsVisible(target, methodInfo);
 			if (!visible)
@@ -143,6 +143,11 @@ namespace NaughtyAttributes.Editor
 			{
 				ButtonAttribute buttonAttribute = (ButtonAttribute)methodInfo.GetCustomAttributes(typeof(ButtonAttribute), true)[0];
 				string buttonText = string.IsNullOrEmpty(buttonAttribute.Text) ? ObjectNames.NicifyVariableName(methodInfo.Name) : buttonAttribute.Text;
+
+				if(buttonAttribute.Placement != placement)
+				{
+					return;
+				}
 
 				bool buttonEnabled = ButtonUtility.IsEnabled(target, methodInfo);
 
