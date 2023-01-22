@@ -23,6 +23,14 @@ public class Visualization : MonoBehaviour
 		if (gifMaker.GetAssignedPrefab() != null)
 		{
 			assignedPrefab = gifMaker.GetAssignedPrefab();
+
+			GameObject inSceneVisualization = GameObject.Find("VisualizationObject");
+			if (inSceneVisualization != null)
+			{
+				objectVisualization = inSceneVisualization;
+				return;
+			}
+
 			objectVisualization = Instantiate(assignedPrefab);
 			objectVisualization.name = "VisualizationObject";
 		}
@@ -37,7 +45,7 @@ public class Visualization : MonoBehaviour
 	{
 		if (assignedPrefab == null || assignedPrefab != gifMaker.GetAssignedPrefab())
 		{
-			DestroyImmediate(objectVisualization);
+			if (objectVisualization != null) { DestroyImmediate(objectVisualization); }
 			assignedPrefab = gifMaker.GetAssignedPrefab();
 			objectVisualization = Instantiate(assignedPrefab);
 			objectVisualization.name = "VisualizationObject";

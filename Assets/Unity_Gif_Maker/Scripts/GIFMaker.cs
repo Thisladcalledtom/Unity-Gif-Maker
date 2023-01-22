@@ -7,11 +7,12 @@ using UnityEngine;
 using NaughtyAttributes;
 using UnityEngine.Rendering.Universal;
 using Debug = UnityEngine.Debug;
+using UnityEngine.UIElements;
 
 [RequireComponent(typeof(Camera))]
 public class GIFMaker : MonoBehaviour
 {
-	public bool visualizationEnabled;
+	[ReadOnly] public bool visualizationEnabled;
 	[Button("EnableVisualization", EButtonEnableMode.Always, ButtonPlacement.Top)]
 	public void EnableVisualization()
 	{
@@ -20,6 +21,13 @@ public class GIFMaker : MonoBehaviour
 			visualizationEnabled = true;
 			gameObject.AddComponent<Visualization>();
 		}
+
+		if(cam == null)
+		{
+			cam = GetComponent<Camera>();
+		}
+
+		cam.targetTexture = null;
 	}
 
 
@@ -61,7 +69,6 @@ public class GIFMaker : MonoBehaviour
 	private const string GIF_FramePath = "Temp";
 
 	[Foldout("GIF Attributes")][Range(1, 50)][SerializeField] private int numOfFrames = 10;
-	[Foldout("GIF Attributes")][Range(1, 20)][SerializeField] private int rotationSpeedMultiplier = 1;
 	[Foldout("GIF Attributes")][SerializeField] private bool invertRotation;
 	[Foldout("GIF Attributes")][SerializeField] private bool xRotation;
 	[Foldout("GIF Attributes")][SerializeField] private bool yRotation;
@@ -191,7 +198,7 @@ public class GIFMaker : MonoBehaviour
 	{
 		string strCmdText;
 		string path = Path.Combine(Application.dataPath, DefaultSavePath, GIFSavePath, $"{obj.name}.gif");
-		strCmdText = $"magick convert -set dispose background -background none -resize 768x576 -delay {DelayPerFrame} -loop 0 \"{info.FullName}/*.png\" \"{path}\"";
+		strCmdText = $"magick convert -set dispose background -background none -resize 1920x1080 -delay {DelayPerFrame} -loop 0 \"{info.FullName}/*.png\" \"{path}\"";
 
 		Process process = ExecuteCommand(strCmdText);
 
@@ -199,8 +206,6 @@ public class GIFMaker : MonoBehaviour
 		process.Exited += new EventHandler((sender, e) =>
 		{
 			DeleteDirectory(info);
-			if (gameObject.GetComponent<Visualization>() == null)
-				gameObject.AddComponent<Visualization>();
 		});
 	}
 
@@ -216,11 +221,15 @@ public class GIFMaker : MonoBehaviour
 
 	private void RotateObject(GameObject obj)
 	{
-		//assign each rotation value by numOfFrames.
-		Vector3 endValues = Vector3.zero;
-		if (xRotation) endValues.x = rotationSpeedMultiplier * 360;
-		if (yRotation) endValues.y = rotationSpeedMultiplier * 360;
-		if (zRotation) endValues.z = rotationSpeedMultiplier * 360;
+		Vector3 eulerAngles = Vector3.zero;
+		if (xRotation) eulerAngles.x = 1;
+		if (yRotation) eulerAngles.y = 1;
+		if (zRotation) eulerAngles.z = 1;
+
+		if (invertRotation) eulerAngles = -eulerAngles;
+
+		Quaternion startRotation = Quaternion.Euler(prefabRotation);
+
 
 		//for each frame, Rotate object and snap a picture of it, and save it in the specified location.
 		for (int i = 0; i < numOfFrames; i++)
@@ -228,9 +237,11 @@ public class GIFMaker : MonoBehaviour
 			DirectoryInfo info = BuildDirectory(Application.dataPath, GIF_FramePath, obj.name + "_Frames");
 			FileInfo fileInfo = new FileInfo(Path.Combine(info.FullName, $"{i:000}.png"));
 
-			float time = (float)i / numOfFrames;
-			Vector3 per = endValues * time;
-			obj.transform.rotation = invertRotation ? Quaternion.Euler(per) : Quaternion.Inverse(Quaternion.Euler(per));
+			float t = (float)i / numOfFrames;
+			float angle = 360 * t;
+			Quaternion rotation = Quaternion.Euler(eulerAngles * angle);
+			obj.transform.rotation = startRotation * rotation;
+
 			TakeSnapShot(fileInfo, obj, true);
 		}
 	}
@@ -295,6 +306,8 @@ public class GIFMaker : MonoBehaviour
 		{
 			gameObject.AddComponent<Visualization>();
 		}
+
+		cam.targetTexture = null;
 
 	}
 
