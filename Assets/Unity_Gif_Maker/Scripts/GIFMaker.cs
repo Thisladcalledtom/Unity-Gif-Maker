@@ -40,6 +40,9 @@ public class GIFMaker : MonoBehaviour
 	[BoxGroup("Render Texture")][SerializeField] private RenderTextureSize renderTextureWidth;
 	[BoxGroup("Render Texture")][SerializeField] private RenderTextureSize renderTextureHeight;
 
+	[Tooltip("The Physical Size of the gif. Smaller values = visually smaller Gif.")]
+	[BoxGroup("Output Size")] [SerializeField] private OutputSize outputSize;
+
 	[Space]
 
 	[Tooltip("Set whether the scene light should be enabled.")]
@@ -198,7 +201,7 @@ public class GIFMaker : MonoBehaviour
 	{
 		string strCmdText;
 		string path = Path.Combine(Application.dataPath, DefaultSavePath, GIFSavePath, $"{obj.name}.gif");
-		strCmdText = $"magick convert -set dispose background -background none -resize 1920x1080 -delay {DelayPerFrame} -loop 0 \"{info.FullName}/*.png\" \"{path}\"";
+		strCmdText = $"magick convert -set dispose background -background none -resize {(int)outputSize}x{(int)outputSize} -delay {DelayPerFrame} -loop 0 \"{info.FullName}/*.png\" \"{path}\"";
 
 		Process process = ExecuteCommand(strCmdText);
 
@@ -348,4 +351,24 @@ public enum RenderTextureSize
 	e = 4096,
 	[InspectorName("8192")]
 	f = 8192
+}
+
+public enum OutputSize
+{
+	[InspectorName("32")]
+	a = 32,
+	[InspectorName("64")]
+	b = 64,
+	[InspectorName("128")]
+	c = 128,
+	[InspectorName("256")]
+	d = 256,
+	[InspectorName("512")]
+	e = 512,
+	[InspectorName("1024")]
+	f = 1024,
+	[InspectorName("2048")]
+	g = 2048,
+	[InspectorName("4096")]
+	h = 4096
 }
